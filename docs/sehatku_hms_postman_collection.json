@@ -18,22 +18,22 @@
     },
     {
       "key": "doctor_id",
-      "value": "d1",
+      "value": "30000000-0000-4000-8000-000000000001",
       "type": "string"
     },
     {
       "key": "patient_id",
-      "value": "p1",
+      "value": "40000000-0000-4000-8000-000000000001",
       "type": "string"
     },
     {
       "key": "appointment_id",
-      "value": "a1",
+      "value": "50000000-0000-4000-8000-000000000001",
       "type": "string"
     },
     {
       "key": "invoice_id",
-      "value": "inv-102",
+      "value": "80000000-0000-4000-8000-000000000001",
       "type": "string"
     }
   ],
@@ -434,8 +434,64 @@
       ]
     },
     {
-      "name": "05. Billing, Cashier POS & Official Receipts",
+      "name": "05. Billing, Cashier POS, Shift Management & Official Receipts",
       "item": [
+        {
+          "name": "Open Cashier Shift (Buka Shift Kasir)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cashierId\": \"admin_user_id\",\n  \"cashierName\": \"Kasir Utama - Siti Rahma\",\n  \"shiftName\": \"Pagi\",\n  \"initialCash\": 500000,\n  \"notes\": \"Modal kas awal uang kembalian pecahan 2rb, 5rb, 10rb, 20rb\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/billing/shifts/open",
+              "host": ["{{base_url}}"],
+              "path": ["billing", "shifts", "open"]
+            }
+          }
+        },
+        {
+          "name": "Get Current Active Cashier Shift (Live Reconciliation)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/billing/shifts/current",
+              "host": ["{{base_url}}"],
+              "path": ["billing", "shifts", "current"]
+            }
+          }
+        },
+        {
+          "name": "Get All Cashier Shifts History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/billing/shifts",
+              "host": ["{{base_url}}"],
+              "path": ["billing", "shifts"]
+            }
+          }
+        },
+        {
+          "name": "Close Cashier Shift & Balancing (Tutup Shift Kasir)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actualCashCounted\": 1350000,\n  \"notes\": \"Shift pagi selesai. Uang kas fisik sesuai dengan saldo laci.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/billing/shifts/shift-123/close",
+              "host": ["{{base_url}}"],
+              "path": ["billing", "shifts", "shift-123", "close"]
+            }
+          }
+        },
         {
           "name": "Get List Invoices (All)",
           "request": {
@@ -830,6 +886,382 @@
           }
         }
       ]
+    },
+    {
+      "name": "10. Clinic Procedures & Tariffs",
+      "item": [
+        {
+          "name": "List Master Procedures",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/procedures",
+              "host": ["{{base_url}}"],
+              "path": ["procedures"]
+            }
+          }
+        },
+        {
+          "name": "Create Procedure (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PROC-011\",\n  \"name\": \"Injeksi Neurobion 5000\",\n  \"category\": \"Tindakan Medis\",\n  \"description\": \"Injeksi vitamin neurotropik intramuskular.\",\n  \"price\": 65000,\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/procedures",
+              "host": ["{{base_url}}"],
+              "path": ["procedures"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Medical Certificates (SKD & Surat Sehat)",
+      "item": [
+        {
+          "name": "List Medical Certificates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/medical-records/certificates",
+              "host": ["{{base_url}}"],
+              "path": ["medical-records", "certificates"]
+            }
+          }
+        },
+        {
+          "name": "Create Sick Leave Certificate (SKD)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"sick_leave\",\n  \"patientId\": \"{{patient_id}}\",\n  \"doctorId\": \"{{doctor_id}}\",\n  \"diagnosis\": \"Hipertensi Primer & Kelelahan Fisik\",\n  \"durationDays\": 2,\n  \"notes\": \"Pasien memerlukan istirahat tirah baring selama 2 hari.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/medical-records/certificates",
+              "host": ["{{base_url}}"],
+              "path": ["medical-records", "certificates"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Clinic Daily Reports & Analytics",
+      "item": [
+        {
+          "name": "Get Daily Clinic Summary & Top Medicines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/daily-report",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "daily-report"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "13. Inpatient & Bed Management (Rawat Inap)",
+      "item": [
+        {
+          "name": "Get Rooms & Beds Status (Floor Plan)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/inpatient/beds",
+              "host": ["{{base_url}}"],
+              "path": ["inpatient", "beds"]
+            }
+          }
+        },
+        {
+          "name": "Filter Beds by Class (VIP, Kelas 1, ICU)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/inpatient/beds?classType=Kelas 1&status=available",
+              "host": ["{{base_url}}"],
+              "path": ["inpatient", "beds"],
+              "query": [
+                { "key": "classType", "value": "Kelas 1" },
+                { "key": "status", "value": "available" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Room & Bed Setup",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomNumber\": \"VIP-103\",\n  \"roomName\": \"Paviliun Melati VIP 3\",\n  \"bedNumber\": \"Bed A\",\n  \"classType\": \"VIP\",\n  \"dailyRate\": 850000,\n  \"status\": \"available\",\n  \"notes\": \"Fasilitas Smart TV, Sofa Bed Penunggu, Kulkas, AC, Water Heater\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inpatient/beds",
+              "host": ["{{base_url}}"],
+              "path": ["inpatient", "beds"]
+            }
+          }
+        },
+        {
+          "name": "Update Bed Status (Cleaning / Available)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"available\",\n  \"notes\": \"Bed telah disterilisasi dan siap dipakai\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inpatient/beds/bed-id/status",
+              "host": ["{{base_url}}"],
+              "path": ["inpatient", "beds", "bed-id", "status"]
+            }
+          }
+        },
+        {
+          "name": "Get Inpatient Active Admissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/inpatient/admissions?status=active",
+              "host": ["{{base_url}}"],
+              "path": ["inpatient", "admissions"],
+              "query": [{ "key": "status", "value": "active" }]
+            }
+          }
+        },
+        {
+          "name": "Create Inpatient Admission (Check-In Ranap)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"{{patient_id}}\",\n  \"doctorId\": \"{{doctor_id}}\",\n  \"bedId\": \"bed-id\",\n  \"admissionType\": \"Poliklinik\",\n  \"initialDiagnosis\": \"DHF Grade II\",\n  \"notes\": \"Pasien lemas, trombosit 85.000, infus RL 20 tpm\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inpatient/admissions",
+              "host": ["{{base_url}}"],
+              "path": ["inpatient", "admissions"]
+            }
+          }
+        },
+        {
+          "name": "Transfer Bed (Pindah Kamar)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newBedId\": \"new-bed-id\",\n  \"reason\": \"Permintaan upgrade ke VIP oleh keluarga\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inpatient/admissions/admission-id/transfer-bed",
+              "host": ["{{base_url}}"],
+              "path": ["inpatient", "admissions", "admission-id", "transfer-bed"]
+            }
+          }
+        },
+        {
+          "name": "Discharge Inpatient & Auto Billing (Pulangkan Pasien)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dischargeDiagnosis\": \"Dengue Hemorrhagic Fever - Sembuh\",\n  \"dischargeCondition\": \"Sembuh\",\n  \"notes\": \"Pasien diijinkan pulang. Kontrol poli dalam 3 hari.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inpatient/admissions/admission-id/discharge",
+              "host": ["{{base_url}}"],
+              "path": ["inpatient", "admissions", "admission-id", "discharge"]
+            }
+          }
+        },
+        {
+          "name": "Get Admission CPPT Notes (Catatan Visite)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/inpatient/admissions/admission-id/cppt",
+              "host": ["{{base_url}}"],
+              "path": ["inpatient", "admissions", "admission-id", "cppt"]
+            }
+          }
+        },
+        {
+          "name": "Add New CPPT Record (SOAP + TTV Ranap)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recorderRole\": \"Dokter DPJP\",\n  \"recorderName\": \"dr. Maya Pratama, Sp.JP\",\n  \"subjective\": \"Demam turun, mual berkurang, nafsu makan membaik.\",\n  \"objective\": \"TD: 118/76 mmHg, HR: 80x/m, RR: 18x/m, T: 36.6 C, SpO2: 99%\",\n  \"assessment\": \"DHF Grade II fase pemulihan\",\n  \"plan\": \"IVFD Asering 1500cc/24 jam, Paracetamol PO prn\",\n  \"instruction\": \"Cek DL ulang besok pagi\",\n  \"bloodPressure\": \"118/76\",\n  \"heartRate\": 80,\n  \"temperature\": 36.6,\n  \"respiratoryRate\": 18,\n  \"oxygenSaturation\": 99\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inpatient/admissions/admission-id/cppt",
+              "host": ["{{base_url}}"],
+              "path": ["inpatient", "admissions", "admission-id", "cppt"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "14. Laboratory & Diagnostics (LIS)",
+      "item": [
+        {
+          "name": "Get Lab Test Catalog",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/laboratory/catalog",
+              "host": ["{{base_url}}"],
+              "path": ["laboratory", "catalog"]
+            }
+          }
+        },
+        {
+          "name": "Filter Catalog by Category (Hematologi, Kimia, Urin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/laboratory/catalog?category=Hematologi",
+              "host": ["{{base_url}}"],
+              "path": ["laboratory", "catalog"],
+              "query": [{ "key": "category", "value": "Hematologi" }]
+            }
+          }
+        },
+        {
+          "name": "Create Lab Test Catalog Item",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"LAB-ELECTRO\",\n  \"name\": \"Elektrolit Serum (Na, K, Cl)\",\n  \"category\": \"Kimia Klinik\",\n  \"sampleType\": \"Serum Darah\",\n  \"unit\": \"mmol/L\",\n  \"normalRangeText\": \"Na: 135-145, K: 3.5-5.0, Cl: 98-106 mmol/L\",\n  \"price\": 145000,\n  \"description\": \"Pemeriksaan keseimbangan ion natrium, kalium, dan klorida\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/laboratory/catalog",
+              "host": ["{{base_url}}"],
+              "path": ["laboratory", "catalog"]
+            }
+          }
+        },
+        {
+          "name": "Get Lab Orders List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/laboratory/orders",
+              "host": ["{{base_url}}"],
+              "path": ["laboratory", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Create Lab Order (Doctor Prescription)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"{{patient_id}}\",\n  \"doctorId\": \"{{doctor_id}}\",\n  \"priority\": \"CITO\",\n  \"clinicalDiagnosis\": \"DHF Grade II\",\n  \"clinicalNotes\": \"Cek trombosit & hematokrit cito\",\n  \"items\": [\n    {\n      \"testCode\": \"LAB-DL\",\n      \"testName\": \"Darah Lengkap (Hematologi 5-Diff)\",\n      \"category\": \"Hematologi\",\n      \"price\": 95000,\n      \"unit\": \"Panel\",\n      \"normalRangeText\": \"Hb: 12-16 g/dL, Trombosit: 150-450 x10^3/uL\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/laboratory/orders",
+              "host": ["{{base_url}}"],
+              "path": ["laboratory", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Mark Sample Collected (Analis Lab)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"collectorName\": \"Ns. Siti Rahma, S.Kep\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/laboratory/orders/order-id/sample",
+              "host": ["{{base_url}}"],
+              "path": ["laboratory", "orders", "order-id", "sample"]
+            }
+          }
+        },
+        {
+          "name": "Submit Lab Test Results (Entry Nilai Analis)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"results\": [\n    {\n      \"itemId\": \"item-id\",\n      \"resultValue\": \"95000\",\n      \"flag\": \"low\",\n      \"analystNotes\": \"Trombositopenia dikonfirmasi\",\n      \"analyzedBy\": \"Wahyu Hidayat, A.Md.AK\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/laboratory/orders/order-id/results",
+              "host": ["{{base_url}}"],
+              "path": ["laboratory", "orders", "order-id", "results"]
+            }
+          }
+        },
+        {
+          "name": "Verify & Complete Lab Order (Sp.PK Validation)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"verifiedBy\": \"dr. Hendra Gunawan, Sp.PK\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/laboratory/orders/order-id/verify",
+              "host": ["{{base_url}}"],
+              "path": ["laboratory", "orders", "order-id", "verify"]
+            }
+          }
+        },
+        {
+          "name": "Get Official A4 Lab Report PDF Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/laboratory/orders/order-id/pdf-data",
+              "host": ["{{base_url}}"],
+              "path": ["laboratory", "orders", "order-id", "pdf-data"]
+            }
+          }
+        }
+      ]
     }
   ]
 }
+
+
