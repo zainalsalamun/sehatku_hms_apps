@@ -32,6 +32,13 @@ model Hospital {
   userRoles    UserRole[]
   invoices     Invoice[]
   auditLogs    AuditLog[]
+  procedures   Procedure[]
+  medicalCertificates MedicalCertificate[]
+  cashierShifts CashierShift[]
+  roomBeds      RoomBed[]
+  inpatientAdmissions InpatientAdmission[]
+  labTestCatalogs LabTestCatalog[]
+  labOrders     LabOrder[]
 
   @@map("hospitals")
 }
@@ -128,6 +135,9 @@ model Doctor {
   appointments    Appointment[]
   encounters      Encounter[]
   prescriptions   Prescription[]
+  medicalCertificates MedicalCertificate[]
+  inpatientAdmissions InpatientAdmission[]
+  labOrders           LabOrder[]
 
   @@unique([hospitalId, licenseNumber])
   @@map("doctors")
@@ -178,6 +188,9 @@ model Patient {
   encounters          Encounter[]
   prescriptions       Prescription[]
   invoices            Invoice[]
+  medicalCertificates MedicalCertificate[]
+  inpatientAdmissions InpatientAdmission[]
+  labOrders           LabOrder[]
 
   @@unique([hospitalId, medicalRecordNumber])
   @@map("patients")
@@ -250,6 +263,8 @@ model Encounter {
   doctor           Doctor         @relation(fields: [doctorId], references: [id], onDelete: Restrict)
   diagnoses        Diagnosis[]
   prescriptions    Prescription[]
+  procedures       EncounterProcedure[]
+  medicalCertificate MedicalCertificate?
 
   @@map("encounters")
 }
@@ -360,4 +375,242 @@ model Notification {
 
   @@map("notifications")
 }
+
+model Procedure {
+  id          String   @id @default(uuid())
+  hospitalId  String   @map("hospital_id")
+  code        String   @unique
+  name        String
+  category    String   @default("Umum") // 'Umum', 'Gigi', 'Tindakan Medis', 'Laboratorium Rapid', 'Keperawatan'
+  description String?
+  price       Decimal  @default(0.00) @db.Decimal(12, 2)
+  status      String   @default("active") // 'active', 'inactive'
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  hospital    Hospital             @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  encounters  EncounterProcedure[]
+
+  @@map("procedures")
+}
+
+model EncounterProcedure {
+  id          String   @id @default(uuid())
+  encounterId String   @map("encounter_id")
+  procedureId String   @map("procedure_id")
+  name        String
+  price       Decimal  @default(0.00) @db.Decimal(12, 2)
+  notes       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  encounter   Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  procedure   Procedure @relation(fields: [procedureId], references: [id], onDelete: Restrict)
+
+  @@map("encounter_procedures")
+}
+
+model MedicalCertificate {
+  id                String    @id @default(uuid())
+  certificateNumber String    @unique @map("certificate_number")
+  type              String    @default("sick_leave") // 'sick_leave' (Surat Keterangan Sakit / SKD), 'healthy' (Surat Keterangan Sehat)
+  hospitalId        String    @map("hospital_id")
+  encounterId       String?   @unique @map("encounter_id")
+  patientId         String    @map("patient_id")
+  doctorId          String    @map("doctor_id")
+  diagnosis         String?
+  startDate         DateTime  @default(now()) @map("start_date") @db.Date
+  endDate           DateTime? @map("end_date") @db.Date
+  durationDays      Int       @default(1) @map("duration_days")
+  notes             String?
+  status            String    @default("issued")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  hospital          Hospital   @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  encounter         Encounter? @relation(fields: [encounterId], references: [id], onDelete: SetNull)
+  patient           Patient    @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor            Doctor     @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+
+  @@map("medical_certificates")
+}
+
+model CashierShift {
+  id                    String    @id @default(uuid())
+  hospitalId            String    @map("hospital_id")
+  cashierId             String    @map("cashier_id")
+  cashierName           String    @map("cashier_name")
+  shiftName             String    @default("Pagi") @map("shift_name") // 'Pagi', 'Siang', 'Malam'
+  startTime             DateTime  @default(now()) @map("start_time")
+  endTime               DateTime? @map("end_time")
+  initialCash           Decimal   @default(0.00) @map("initial_cash") @db.Decimal(12, 2)
+  totalCashReceived     Decimal   @default(0.00) @map("total_cash_received") @db.Decimal(12, 2)
+  totalQrisReceived     Decimal   @default(0.00) @map("total_qris_received") @db.Decimal(12, 2)
+  totalTransferReceived Decimal   @default(0.00) @map("total_transfer_received") @db.Decimal(12, 2)
+  totalDebitReceived    Decimal   @default(0.00) @map("total_debit_received") @db.Decimal(12, 2)
+  totalCardReceived     Decimal   @default(0.00) @map("total_card_received") @db.Decimal(12, 2)
+  totalTransactions     Int       @default(0) @map("total_transactions")
+  expectedCashEnd       Decimal   @default(0.00) @map("expected_cash_end") @db.Decimal(12, 2)
+  actualCashCounted     Decimal?  @map("actual_cash_counted") @db.Decimal(12, 2)
+  discrepancy           Decimal?  @db.Decimal(12, 2)
+  status                String    @default("OPEN") // 'OPEN', 'CLOSED'
+  notes                 String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  hospital              Hospital  @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+
+  @@map("cashier_shifts")
+}
+
+model RoomBed {
+  id         String   @id @default(uuid())
+  hospitalId String   @map("hospital_id")
+  roomNumber String   @map("room_number")
+  roomName   String   @map("room_name")
+  bedNumber  String   @map("bed_number")
+  classType  String   @default("Kelas 1") @map("class_type")
+  dailyRate  Decimal  @default(250000.00) @map("daily_rate") @db.Decimal(12, 2)
+  status     String   @default("available") // 'available', 'occupied', 'cleaning', 'maintenance'
+  notes      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+
+  hospital   Hospital             @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  admissions InpatientAdmission[]
+
+  @@map("room_beds")
+}
+
+model InpatientAdmission {
+  id                 String    @id @default(uuid())
+  admissionNumber    String    @unique @map("admission_number")
+  hospitalId         String    @map("hospital_id")
+  patientId          String    @map("patient_id")
+  doctorId           String    @map("doctor_id")
+  bedId              String    @map("bed_id")
+  admissionDate      DateTime  @default(now()) @map("admission_date")
+  dischargeDate      DateTime? @map("discharge_date")
+  admissionType      String    @default("Poliklinik") @map("admission_type")
+  initialDiagnosis   String?   @map("initial_diagnosis")
+  dischargeDiagnosis String?   @map("discharge_diagnosis")
+  dischargeCondition String?   @map("discharge_condition")
+  status             String    @default("active") // 'active', 'discharged', 'transferred', 'cancelled'
+  totalDays          Int       @default(1) @map("total_days")
+  totalBedCost       Decimal   @default(0.00) @map("total_bed_cost") @db.Decimal(12, 2)
+  notes              String?
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  hospital           Hospital       @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  patient            Patient        @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor             Doctor         @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  bed                RoomBed        @relation(fields: [bedId], references: [id], onDelete: Restrict)
+  cpptRecords        InpatientCPPT[]
+
+  @@map("inpatient_admissions")
+}
+
+model InpatientCPPT {
+  id               String   @id @default(uuid())
+  admissionId      String   @map("admission_id")
+  recorderRole     String   @default("Dokter DPJP") @map("recorder_role")
+  recorderName     String   @map("recorder_name")
+  recordedAt       DateTime @default(now()) @map("recorded_at")
+  subjective       String?
+  objective        String?
+  assessment       String?
+  plan             String?
+  instruction      String?
+  bloodPressure    String?  @map("blood_pressure")
+  heartRate        Int?     @map("heart_rate")
+  temperature      Decimal? @db.Decimal(4, 1)
+  respiratoryRate  Int?     @map("respiratory_rate")
+  oxygenSaturation Int?     @map("oxygen_saturation")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+
+  admission        InpatientAdmission @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+
+  @@map("inpatient_cppt")
+}
+
+model LabTestCatalog {
+  id              String   @id @default(uuid())
+  hospitalId      String   @map("hospital_id")
+  code            String
+  name            String
+  category        String   // 'Hematologi', 'Kimia Klinik', 'Urinalisis', 'Imunologi & Serologi', 'Radiologi', 'Mikrobiologi'
+  sampleType      String   @default("Darah Vena") @map("sample_type")
+  unit            String?
+  normalRangeMin  Decimal? @map("normal_range_min") @db.Decimal(10, 2)
+  normalRangeMax  Decimal? @map("normal_range_max") @db.Decimal(10, 2)
+  normalRangeText String?  @map("normal_range_text")
+  price           Decimal  @default(0.00) @db.Decimal(12, 2)
+  description     String?
+  status          String   @default("active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+
+  hospital        Hospital       @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  orderItems      LabOrderItem[]
+
+  @@unique([hospitalId, code])
+  @@map("lab_test_catalogs")
+}
+
+model LabOrder {
+  id                  String    @id @default(uuid())
+  orderNumber         String    @unique @map("order_number")
+  hospitalId          String    @map("hospital_id")
+  patientId           String    @map("patient_id")
+  doctorId            String    @map("doctor_id")
+  appointmentId       String?   @map("appointment_id")
+  admissionId         String?   @map("admission_id")
+  priority            String    @default("Normal") // 'Normal', 'CITO'
+  clinicalDiagnosis   String?   @map("clinical_diagnosis")
+  clinicalNotes       String?   @map("clinical_notes")
+  status              String    @default("ordered") // 'ordered', 'sample_collected', 'in_progress', 'completed', 'cancelled'
+  sampleCollectedAt   DateTime? @map("sample_collected_at")
+  sampleCollectorName String?   @map("sample_collector_name")
+  completedAt         DateTime? @map("completed_at")
+  verifiedBy          String?   @map("verified_by")
+  totalCost           Decimal   @default(0.00) @map("total_cost") @db.Decimal(12, 2)
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  hospital            Hospital       @relation(fields: [hospitalId], references: [id], onDelete: Restrict)
+  patient             Patient        @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor              Doctor         @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  items               LabOrderItem[]
+
+  @@map("lab_orders")
+}
+
+model LabOrderItem {
+  id              String    @id @default(uuid())
+  labOrderId      String    @map("lab_order_id")
+  testCatalogId   String?   @map("test_catalog_id")
+  testCode        String    @map("test_code")
+  testName        String    @map("test_name")
+  category        String
+  price           Decimal   @default(0.00) @db.Decimal(12, 2)
+  resultValue     String?   @map("result_value")
+  unit            String?
+  normalRangeText String?   @map("normal_range_text")
+  flag            String?   // 'normal', 'low', 'high', 'critical'
+  status          String    @default("pending") // 'pending', 'in_progress', 'completed'
+  analystNotes    String?   @map("analyst_notes")
+  analyzedAt      DateTime? @map("analyzed_at")
+  analyzedBy      String?   @map("analyzed_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  labOrder        LabOrder        @relation(fields: [labOrderId], references: [id], onDelete: Cascade)
+  testCatalog     LabTestCatalog? @relation(fields: [testCatalogId], references: [id], onDelete: SetNull)
+
+  @@map("lab_order_items")
+}
+
+
+
 
