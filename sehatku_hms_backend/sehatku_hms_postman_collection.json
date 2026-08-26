@@ -18,22 +18,22 @@
     },
     {
       "key": "doctor_id",
-      "value": "d1",
+      "value": "30000000-0000-4000-8000-000000000001",
       "type": "string"
     },
     {
       "key": "patient_id",
-      "value": "p1",
+      "value": "40000000-0000-4000-8000-000000000001",
       "type": "string"
     },
     {
       "key": "appointment_id",
-      "value": "a1",
+      "value": "50000000-0000-4000-8000-000000000001",
       "type": "string"
     },
     {
       "key": "invoice_id",
-      "value": "inv-102",
+      "value": "80000000-0000-4000-8000-000000000001",
       "type": "string"
     }
   ],
@@ -826,6 +826,92 @@
               "raw": "{{base_url}}/notifications",
               "host": ["{{base_url}}"],
               "path": ["notifications"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Clinic Procedures & Tariffs",
+      "item": [
+        {
+          "name": "List Master Procedures",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/procedures",
+              "host": ["{{base_url}}"],
+              "path": ["procedures"]
+            }
+          }
+        },
+        {
+          "name": "Create Procedure (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PROC-011\",\n  \"name\": \"Injeksi Neurobion 5000\",\n  \"category\": \"Tindakan Medis\",\n  \"description\": \"Injeksi vitamin neurotropik intramuskular.\",\n  \"price\": 65000,\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/procedures",
+              "host": ["{{base_url}}"],
+              "path": ["procedures"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Medical Certificates (SKD & Surat Sehat)",
+      "item": [
+        {
+          "name": "List Medical Certificates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/medical-records/certificates",
+              "host": ["{{base_url}}"],
+              "path": ["medical-records", "certificates"]
+            }
+          }
+        },
+        {
+          "name": "Create Sick Leave Certificate (SKD)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"sick_leave\",\n  \"patientId\": \"{{patient_id}}\",\n  \"doctorId\": \"{{doctor_id}}\",\n  \"diagnosis\": \"Hipertensi Primer & Kelelahan Fisik\",\n  \"durationDays\": 2,\n  \"notes\": \"Pasien memerlukan istirahat tirah baring selama 2 hari.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/medical-records/certificates",
+              "host": ["{{base_url}}"],
+              "path": ["medical-records", "certificates"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Clinic Daily Reports & Analytics",
+      "item": [
+        {
+          "name": "Get Daily Clinic Summary & Top Medicines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/daily-report",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "daily-report"]
             }
           }
         }
