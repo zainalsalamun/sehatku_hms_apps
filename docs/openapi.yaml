@@ -568,6 +568,78 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaymentResponse'
+  /billing/shifts/open:
+    post:
+      tags: [Billing]
+      operationId: openCashierShift
+      summary: Buka shift kasir baru dengan modal kas awal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [cashierName, shiftName, initialCash]
+              properties:
+                cashierId:
+                  type: string
+                cashierName:
+                  type: string
+                  example: Kasir Utama - Siti Rahma
+                shiftName:
+                  type: string
+                  example: Pagi
+                initialCash:
+                  type: number
+                  example: 500000
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Shift kasir berhasil dibuka
+  /billing/shifts/current:
+    get:
+      tags: [Billing]
+      operationId: getCurrentCashierShift
+      summary: Cek status shift kasir yang sedang aktif & live rekonsiliasi
+      responses:
+        '200':
+          description: Data shift kasir aktif
+  /billing/shifts:
+    get:
+      tags: [Billing]
+      operationId: listCashierShifts
+      summary: Riwayat seluruh shift kasir & rekap tutup kas
+      responses:
+        '200':
+          description: List of cashier shifts
+  /billing/shifts/{shiftId}/close:
+    post:
+      tags: [Billing]
+      operationId: closeCashierShift
+      summary: Tutup shift kasir, hitung uang fisik laci, dan rekonsiliasi kas
+      parameters:
+        - name: shiftId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [actualCashCounted]
+              properties:
+                actualCashCounted:
+                  type: number
+                  example: 1350000
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Shift kasir berhasil ditutup dengan kalkulasi selisih
         '409':
           $ref: '#/components/responses/Conflict'
   /webhooks/payments/{provider}:
