@@ -33,6 +33,79 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <script>
+    // SehatKu HMS - Clinic Queue Chime & Voice Announcer Engine
+    let cachedVoices = [];
+    if ('speechSynthesis' in window) {
+      cachedVoices = window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = function() {
+        cachedVoices = window.speechSynthesis.getVoices();
+      };
+    }
+
+    window.playHospitalChimeAndSpeak = function(spokenText) {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+          const ctx = new AudioContext();
+          if (ctx.state === 'suspended') {
+            ctx.resume();
+          }
+          const now = ctx.currentTime;
+
+          // Note 1 (Ding - F5 / 698.46Hz)
+          const osc1 = ctx.createOscillator();
+          const gain1 = ctx.createGain();
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(698.46, now);
+          gain1.gain.setValueAtTime(0.35, now);
+          gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+          osc1.connect(gain1);
+          gain1.connect(ctx.destination);
+          osc1.start(now);
+          osc1.stop(now + 0.45);
+
+          // Note 2 (Dong - C5 / 523.25Hz)
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(523.25, now + 0.35);
+          gain2.gain.setValueAtTime(0.40, now + 0.35);
+          gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.95);
+          osc2.connect(gain2);
+          gain2.connect(ctx.destination);
+          osc2.start(now + 0.35);
+          osc2.stop(now + 0.95);
+        }
+      } catch (e) {
+        console.warn('AudioContext error:', e);
+      }
+
+      // Voice TTS Announcement after chime
+      setTimeout(function() {
+        try {
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // cancel any ongoing speech
+            const utterance = new SpeechSynthesisUtterance(spokenText);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.88; // standard clear clinic announcement cadence
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            const voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
+            const idVoice = voices.find(v => (v.lang && (v.lang.startsWith('id') || v.lang.startsWith('ID'))) || (v.name && v.name.toLowerCase().includes('indonesia')));
+            if (idVoice) {
+              utterance.voice = idVoice;
+            }
+
+            window.speechSynthesis.speak(utterance);
+          }
+        } catch (e) {
+          console.warn('SpeechSynthesis error:', e);
+        }
+      }, 950);
+    };
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
