@@ -85,6 +85,13 @@ sehatku_hms/
 - Cetak Lembar Hasil Lab Resmi (A4): Format cetak A4 ber-kop rumah sakit, tanda tangan dokter Sp.PK, dan QR Code verifikasi digital.
 - Sinkronisasi Tagihan Kasir: Biaya pemeriksaan diagnostik otomatis masuk ke invoice Kasir POS pasien.
 
+### J. Modul Export Laporan Keuangan, Farmasi, & Laporan LB1 Dinkes ke Excel (.csv)
+- Export Laporan Kasir & Keuangan: Download rincian transaksi harian/bulanan, metode bayar (Tunai, QRIS, Transfer, Debit), status tagihan, dan rekap omzet ke format spreadsheet.
+- Laporan 10 Besar Penyakit (LB1 Dinas Kesehatan): Rekapitulasi agregasi diagnosa ICD-10 dan demografi gender pasien (L/P) sesuai format standar pelaporan Dinas Kesehatan.
+- Laporan Mutasi & Valuasi Stok Farmasi: Export daftar stok obat, nomor batch, minimum stok, harga pokok, harga jual, dan total nilai aset obat apotek.
+- Laporan Kunjungan Pasien Poliklinik: Rekapitulasi antrean kunjungan per dokter DPJP, keluhan, dan penjamin pasien.
+- Format Standar Spreadsheet: Encoding UTF-8 BOM untuk kompatibilitas langsung dengan Microsoft Excel, Google Sheets, dan LibreOffice tanpa kendala formatting.
+
 ---
 
 ## 3. Panduan Penggunaan Sistem Berdasarkan Role
@@ -159,6 +166,17 @@ sehatku_hms/
 - Klik icon Entri Hasil (Edit) untuk memasukkan nilai hasil pengujian alat laboratorium dan memilih indikator flag (Normal, Low, High, Critical).
 - Klik Verifikasi & Selesaikan Hasil untuk validasi dokter Sp.PK.
 - Klik icon Cetak untuk mencetak Lembar Hasil Laboratorium format A4 resmi dengan QR Code keaslian.
+
+#### 7. Export Laporan Excel (.csv):
+- Buka tab Laporan Klinik.
+- Pantau kartu 10 Besar Penyakit Terbanyak (LB1 Dinkes) dan klik tombol Export LB1 (.csv).
+- Klik tombol Export Excel / CSV di pojok kanan atas untuk memilih jenis laporan lain:
+  - Laporan Rekapitulasi Kasir & Keuangan
+  - Laporan 10 Besar Penyakit (LB1 Dinkes)
+  - Laporan Mutasi & Valuasi Stok Farmasi
+  - Laporan Kunjungan Pasien Poliklinik
+- Tentukan rentang periode (Hari Ini, 7 Hari Terakhir, Bulan Ini, Semua Periode).
+- Klik Unduh File Excel (.csv) dan file spreadsheet akan otomatis terunduh ke perangkat Anda.
 
 ---
 
