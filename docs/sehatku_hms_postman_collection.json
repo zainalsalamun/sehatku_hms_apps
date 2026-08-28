@@ -1260,8 +1260,94 @@
           }
         }
       ]
+    },
+    {
+      "name": "15. Analytics & Excel Reports Export",
+      "item": [
+        {
+          "name": "Get Daily Clinic Operational Report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/daily-report",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "daily-report"]
+            }
+          }
+        },
+        {
+          "name": "Get Top 10 Diseases (Morbiditas LB1 Dinkes Summary)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/morbi-lb1-summary",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "morbi-lb1-summary"]
+            }
+          }
+        },
+        {
+          "name": "Export Financial & Cashier Report (CSV / Excel)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/export/financial?startDate=2026-08-01&endDate=2026-08-31",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "export", "financial"],
+              "query": [
+                { "key": "startDate", "value": "2026-08-01" },
+                { "key": "endDate", "value": "2026-08-31" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Top 10 Diseases LB1 Dinkes (CSV / Excel)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/export/morbi-lb1?startDate=2026-08-01&endDate=2026-08-31",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "export", "morbi-lb1"],
+              "query": [
+                { "key": "startDate", "value": "2026-08-01" },
+                { "key": "endDate", "value": "2026-08-31" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Pharmacy Stock & Valuation (CSV / Excel)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/export/pharmacy-stock",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "export", "pharmacy-stock"]
+            }
+          }
+        },
+        {
+          "name": "Export Patient Visits & Appointments (CSV / Excel)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/export/patient-visits",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "export", "patient-visits"]
+            }
+          }
+        }
+      ]
     }
   ]
 }
+
 
 
