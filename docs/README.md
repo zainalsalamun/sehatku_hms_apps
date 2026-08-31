@@ -12,6 +12,7 @@ DevOps, dan operasional rumah sakit.
 | [05-admin-crud.md](05-admin-crud.md) | Scope dashboard CRUD dan permission |
 | [06-api-guidelines.md](06-api-guidelines.md) | Konvensi request, response, error, pagination, dan idempotency |
 | [07-security-compliance.md](07-security-compliance.md) | Baseline keamanan dan privacy data kesehatan |
+| [08-end-to-end-simulation-guide.md](08-end-to-end-simulation-guide.md) | Panduan lengkap simulasi alur operasional End-to-End multi-role |
 | [openapi.yaml](openapi.yaml) | Kontrak API OpenAPI 3.1 yang machine-readable |
 
 ## Source of truth
