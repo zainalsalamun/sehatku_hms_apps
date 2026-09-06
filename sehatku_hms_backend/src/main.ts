@@ -8,18 +8,22 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Serve static assets (Doctor profile photos, avatars)
-  const publicDir = join(process.cwd(), 'public');
-  app.useStaticAssets(publicDir, {
-    prefix: '/public',
-  });
-
-  // Robust CORS for Flutter Web & Mobile dev
+  // 1. Robust CORS for Flutter Web & Mobile dev (must be registered FIRST)
   app.enableCors({
     origin: (origin, callback) => callback(null, true),
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'X-Requested-With'],
     credentials: true,
+  });
+
+  // 2. Serve static assets (Doctor profile photos, avatars) with explicit CORS headers
+  const publicDir = join(process.cwd(), 'public');
+  app.useStaticAssets(publicDir, {
+    prefix: '/public',
+    setHeaders: (res) => {
+      res.set('Access-Control-Allow-Origin', '*');
+      res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    },
   });
 
   // Global Prefix
