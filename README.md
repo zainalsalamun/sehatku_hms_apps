@@ -185,24 +185,68 @@ sehatku_hms/
 ### Prasyarat:
 - Node.js >= 18.x
 - Flutter SDK >= 3.22.x
+- Google Chrome Browser
 - PostgreSQL 16 & Redis 7 (via Docker)
 
-### Menjalankan Backend:
-```bash
-cd sehatku_hms_backend
-npm install
-npx prisma db push
-npm run start:dev
-```
-Backend API akan berjalan di `http://localhost:3000` dan Swagger API Docs di `http://localhost:3000/api/docs`.
+---
 
-### Menjalankan Frontend (Flutter Web):
+### Langkah 1: Menjalankan Backend (NestJS + PostgreSQL)
 ```bash
-cd sehatku_hms_mobile
-flutter run -d chrome
+# Masuk ke direktori backend
+cd sehatku_hms_backend
+
+# Install dependensi
+npm install
+
+# Push skema database ke PostgreSQL
+npx prisma db push
+
+# Jalankan server backend (development mode)
+npm run dev
+# atau: npm run start:dev
 ```
-Aplikasi Flutter akan terbuka di browser Chrome.
+> **Info:** Backend API akan aktif di `http://localhost:3000/api/v1` dan Swagger API Docs di `http://localhost:3000/api/docs`.
 
 ---
+
+### Langkah 2: Menjalankan Frontend di Browser Chrome (Flutter Web)
+
+```bash
+# Buka terminal baru, masuk ke direktori frontend
+cd sehatku_hms_mobile
+
+# Unduh dependensi Flutter
+flutter pub get
+
+# Jalankan aplikasi langsung di Google Chrome
+flutter run -d chrome
+```
+
+#### Opsi Perintah Tambahan untuk Flutter Chrome:
+```bash
+# 1. Menjalankan di Chrome dengan port spesifik (misal port 8080):
+flutter run -d chrome --web-port=8080
+
+# 2. Menjalankan dengan URL Backend kustom (jika backend tidak di port 3000):
+flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:3000/api/v1
+
+# 3. Menjalankan sebagai Web Server tanpa auto-open browser (dapat dibuka manual di browser apa saja):
+flutter run -d web-server --web-port=8080
+```
+
+#### Tombol Pintasan (Interactive Shortcut) Saat Flutter Berjalan di Terminal:
+- Tekan **`r`** : **Hot Reload** (memperbarui perubahan kode UI secara instan tanpa reload browser).
+- Tekan **`R`** : **Hot Restart** (mereset state aplikasi dari awal).
+- Tekan **`h`** : Menampilkan daftar bantuan perintah terminal Flutter.
+- Tekan **`q`** : Menghentikan aplikasi (*Quit*).
+
+---
+
+### Akun Uji Coba Default (Seed Database):
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Hospital Admin** | `admin@sehatku.id` | `password123` |
+| **Dokter Spesialis** | `doctor@sehatku.id` | `password123` |
+| **Pasien** | `patient@sehatku.id` | `password123` |
 
 Dokumentasi ini disusun sebagai panduan standar operasional sistem Klinik Pratama & Rumah Sakit SehatKu Medika.
